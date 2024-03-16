@@ -56,6 +56,7 @@ private:
     int round;
     int frame;
     bool usedAttack;
+    int numMonsAttack;
 
     int selectedMonsterIndex;
 

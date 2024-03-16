@@ -43,10 +43,10 @@ Arena::Arena()
     round = 0;
     frame = 0;
 
-    Rectangle skillrec1 = {(float)GetScreenWidth() / 2 + 100, 500, 100, 20};
-    Rectangle skillrec2 = {(float)GetScreenWidth() / 2 + 100, 550, 100, 20};
-    Rectangle skillrec3 = {(float)GetScreenWidth() / 2 + 100, 600, 100, 20};
-    Rectangle skillrec4 = {(float)GetScreenWidth() / 2 + 100, 650, 100, 20};
+    Rectangle skillrec1 = {(float)GetScreenWidth() / 2 + 10, 448, (float)GetScreenWidth()/2, 536 - 448};
+    Rectangle skillrec2 = {(float)GetScreenWidth() / 2 + 10, 536, (float)GetScreenWidth()/2, 624 - 536};
+    Rectangle skillrec3 = {(float)GetScreenWidth() / 2 + 10, 624, (float)GetScreenWidth()/2, 712 - 624};
+    Rectangle skillrec4 = {(float)GetScreenWidth() / 2 + 10, 712, (float)GetScreenWidth()/2, (float)GetScreenHeight()};
     skillRec.push_back(skillrec1);
     skillRec.push_back(skillrec2);
     skillRec.push_back(skillrec3);
@@ -56,6 +56,7 @@ Arena::Arena()
     selectedMonsterIndex = 0;
 
     roundBtn = {(float)GetScreenWidth() / 2 - 75, 350, 150, 75};
+    numMonsAttack = 0;
 }
 
 void Arena::RestartArena()
@@ -66,6 +67,7 @@ void Arena::RestartArena()
     frame = 0;
     usedAttack = false;
     selectedMonsterIndex = 0;
+    numMonsAttack = 0;
     teamInfo.clear();
     monsterInfo.clear();
 }
@@ -87,6 +89,25 @@ void Arena::SelectMonster()
             }
             index++;
         }
+    }
+}
+
+void Arena::GetMonster(Monsters::Monster& monster)
+{
+    int amountMonsters = (rand() % 3) + 1;
+    for(int i = 0; i < amountMonsters; i++)
+    {
+        monsterInfo.push_back(std::make_pair(monster,monsterPos[i]));
+    }
+    monsterId = monster;
+}
+
+void Arena::GetTeam(std::vector<Characters::Character>& team)
+{
+    int i = 0;
+    for(auto& character : team)
+    {
+        teamInfo.push_back(std::make_pair(character,teamPos[i++]));
     }
 }
 
@@ -126,24 +147,7 @@ void Arena::ArenaUpdate(std::vector<Monsters::Monster>& monsterList,bool& figthS
 
 }
 
-void Arena::GetMonster(Monsters::Monster& monster)
-{
-    int amountMonsters = (rand() % 3);
-    for(int i = 0; i <= amountMonsters; i++)
-    {
-        monsterInfo.push_back(std::make_pair(monster,monsterPos[i++]));
-    }
-    monsterId = monster;
-}
 
-void Arena::GetTeam(std::vector<Characters::Character>& team)
-{
-    int i = 0;
-    for(auto& character : team)
-    {
-        teamInfo.push_back(std::make_pair(character,teamPos[i++]));
-    }
-}
 
 void Arena::ArenaDraw()
 {
@@ -164,17 +168,18 @@ void Arena::ArenaDraw()
     DrawLineBezier(Vector2{0,448},Vector2{(float)GetScreenWidth(),448},10,WHITE);
     DrawLineBezier(Vector2{(float)GetScreenWidth()/2, 448},Vector2{(float)GetScreenWidth()/2,(float)GetScreenHeight()}, 10, WHITE);
 
-    DrawLine(0, 536,GetScreenWidth()/2, 536, WHITE);
-    DrawLine(0, 624,GetScreenWidth()/2, 624, WHITE);
-    DrawLine(0, 712,GetScreenWidth()/2, 712, WHITE);
+    DrawLine(0, 536,GetScreenWidth(), 536, WHITE);
+    DrawLine(0, 624,GetScreenWidth(), 624, WHITE);
+    DrawLine(0, 712,GetScreenWidth(), 712, WHITE);
 
+    //Anims
     for(int i = 0; i < teamInfo.size(); i++)
     {
         ArenaSkillCheck.CharacterAnim(teamInfo[i].first);
     }
     for(int i = 0; i < monsterInfo.size(); i++)
     {
-        ArenaSkillCheck.MonsterAnim(monsterInfo[i].first);
+        ArenaSkillCheck.MonsterAnim(numMonsAttack,monsterInfo[i].first,teamInfo);
     }
 
     TeamDraw();
@@ -198,30 +203,31 @@ void Arena::ArenaDraw()
 }
 
 void Arena::TeamDraw()
-{
+{   
+    DrawRectangle(characterRec[characterIndex].x,characterRec[characterIndex].y,characterRec[characterIndex].width,characterRec[characterIndex].height, Color{200, 200, 200, 50});
+    int i = 0;
     for(auto& character : teamInfo)
     {   
         //Icon
-        DrawTexturePro(character.first.icon,character.first.source,Rectangle{50,460,75,75},{0,0},0,WHITE);
+        DrawTexturePro(character.first.icon,character.first.source,Rectangle{characterRec[i].x + 50,characterRec[i].y + 12,75,75},{0,0},0,WHITE);
         //Character In fight
         DrawTexturePro(character.first.anims[character.first.animIndex].image,character.first.anims[character.first.animIndex].source,
         Rectangle{character.second.x - 16,character.second.y - 16,100,100},{0,0},0,WHITE);
         //HP
-        DrawRectangle(120,460,character.first.HPLeft, 15, RED);
-        DrawRectangleLines(120,460,character.first.HP, 15, WHITE);
+        DrawRectangle(characterRec[i].x + 120,characterRec[i].y + 12,character.first.HPLeft, 15, RED);
+        DrawRectangleLines(characterRec[i].x + 120,characterRec[i].y + 12,character.first.HP, 15, WHITE);
         //Stamina
-        DrawRectangle(120,480,character.first.staminaLeft, 15, GREEN);
-        DrawRectangleLines(120,480,character.first.stamina, 15, WHITE); 
+        DrawRectangle(characterRec[i].x + 120,characterRec[i].y + 32,character.first.staminaLeft, 15, GREEN);
+        DrawRectangleLines(characterRec[i].x + 120,characterRec[i].y + 32,character.first.stamina, 15, WHITE); 
         //Mana
-        DrawRectangle(120,500,character.first.manaLeft, 15, SKYBLUE);
-        DrawRectangleLines(120,500,character.first.mana, 15, WHITE);  
+        DrawRectangle(characterRec[i].x + 120,characterRec[i].y + 50,character.first.manaLeft, 15, SKYBLUE);
+        DrawRectangleLines(characterRec[i].x + 120,characterRec[i].y + 50,character.first.mana, 15, WHITE);  
+        //Shield
+        DrawText(TextFormat("%i", character.first.shieldLeft), characterRec[i].x + 400, characterRec[i].y + 40, 30, GRAY);
+        i++;
     }
-
-    for(auto& character : teamInfo)
-    {
-        DrawTexturePro(character.first.anims[character.first.animIndex].image,character.first.anims[character.first.animIndex].source,
-        Rectangle{character.second.x - 16,character.second.y - 16,100,100},{0,0},0,WHITE);
-    }
+    
+    
 }
 
 void Arena::MonsterDraw()
@@ -229,13 +235,16 @@ void Arena::MonsterDraw()
     for(auto& monster : monsterInfo)
     {
         //Monster Img
-        //DrawTexturePro(monster.first.movement.monsterImg, monster.first.movement.monsterSource,Rectangle{monster.second.x - 16 ,monster.second.y - 16, 100, 100}, {0,0},0, WHITE);
         DrawTexturePro(monster.first.anims[monster.first.animIndex].image,monster.first.anims[monster.first.animIndex].source,
         Rectangle{monster.second.x - 16,monster.second.y - 16,100,100},{0,0},0,WHITE);
         //Monster HP
         int HPLeft = (monster.first.healthLeft * 100) / monster.first.health;
         DrawRectangle(monster.second.x - 25,monster.second.y + 100 - 25,100, 15, BLACK);
         DrawRectangle(monster.second.x - 25,monster.second.y + 100 - 25,HPLeft, 15, RED);
+        //Monster Shield
+        int ShieldLeft = (monster.first.shieldLeft * 100) / monster.first.shield;
+        DrawRectangle(monster.second.x - 25,monster.second.y + 110 - 25,100, 10, BLACK);
+        DrawRectangle(monster.second.x - 25,monster.second.y + 110 - 25,ShieldLeft, 10, LIGHTGRAY);
     }
 }
 
@@ -248,15 +257,12 @@ void Arena::SelectCharacter()
         int i = 0;
         for(auto rec : characterRec)
         {
-            while(i<= teamInfo.size() - 1)
+            if((mouseX >= rec.x && mouseX <= rec.x + rec.width && mouseY >= rec.y && mouseY <= rec.y + rec.height) && i < teamInfo.size())
             {
-                if(mouseX >= rec.x && mouseX <= rec.x + rec.width && mouseY >= rec.y && mouseY <= rec.y + rec.height)
-                {
-                    characterSelected = true;
-                    characterIndex = i;
-                }
-                i++;
+                characterSelected = true;
+                characterIndex = i;
             }
+            i++;
         }
     }
 }
@@ -267,10 +273,10 @@ void Arena::CharacterSkillsDraw()
     {
         if(characterSelected)
         {
-            DrawText(teamInfo[characterIndex].first.skills[0].name.c_str(),GetScreenWidth() / 2 + 100, 500, 30, WHITE);
-            DrawText(teamInfo[characterIndex].first.skills[1].name.c_str(),GetScreenWidth() / 2 + 100, 550, 30, WHITE);
-            DrawText(teamInfo[characterIndex].first.skills[2].name.c_str(),GetScreenWidth() / 2 + 100, 600, 30, WHITE);
-            DrawText(teamInfo[characterIndex].first.skills[3].name.c_str(),GetScreenWidth() / 2 + 100, 650, 30, WHITE);
+            DrawText(teamInfo[characterIndex].first.skills[0].name.c_str(),GetScreenWidth() / 2 + 100, 480, 30, WHITE);
+            DrawText(teamInfo[characterIndex].first.skills[1].name.c_str(),GetScreenWidth() / 2 + 100, 575, 30, WHITE);
+            DrawText(teamInfo[characterIndex].first.skills[2].name.c_str(),GetScreenWidth() / 2 + 100, 650, 30, WHITE);
+            DrawText(teamInfo[characterIndex].first.skills[3].name.c_str(),GetScreenWidth() / 2 + 100, 750, 30, WHITE);
         }
     }
 
@@ -292,9 +298,40 @@ void Arena::EndRound()
 
 void Arena::MonsterSkill()
 {
-    ArenaSkillCheck.MonsterAttack(monsterInfo,teamInfo);
-    round++;
-    ArenaSkillCheck.RestStaminaMana(teamInfo);
+    if(numMonsAttack == 0)
+    {
+        if(numMonsAttack < monsterInfo.size())
+        {
+            monsterInfo[numMonsAttack].first.animIndex = 1;
+        }
+    }
+    if(numMonsAttack == 1)
+    {
+        if(numMonsAttack < monsterInfo.size())
+        {
+            monsterInfo[numMonsAttack].first.animIndex = 1;
+        }
+    }
+    if(numMonsAttack == 2)
+    {
+        if(numMonsAttack < monsterInfo.size())
+        {
+            monsterInfo[numMonsAttack].first.animIndex = 1;
+        }
+    }
+    if(numMonsAttack == 3)
+    {
+        if(numMonsAttack < monsterInfo.size())
+        {
+            monsterInfo[numMonsAttack].first.animIndex = 1;
+        }
+    }
+    if(numMonsAttack == monsterInfo.size())
+    {
+        numMonsAttack = 0;
+        round++;
+        ArenaSkillCheck.RestStaminaMana(teamInfo);
+    }
 }
 void Arena::SelectSkill()
 {
@@ -334,7 +371,7 @@ void Arena::CharacterSkill(int skillIndex)
     if(ArenaSkillCheck.CheckManaLeft(teamInfo[characterIndex].first.skills[skillIndex], teamInfo[characterIndex].first.manaLeft)
     && ArenaSkillCheck.CheckStaminaLeft(teamInfo[characterIndex].first.skills[skillIndex], teamInfo[characterIndex].first.staminaLeft))
     {
-        if(teamInfo[characterIndex].first.skills[skillIndex].type == "Attack")
+        if(teamInfo[characterIndex].first.skills[skillIndex].type == "Single Attack" || teamInfo[characterIndex].first.skills[skillIndex].type == "Multi Attack" )
         {
             ArenaSkillCheck.AttackSkill(teamInfo[characterIndex].first,skillIndex,monsterInfo[selectedMonsterIndex].first, monsterInfo);
         }

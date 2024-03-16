@@ -41,6 +41,7 @@ public:
         int healthLeft;
         int shield;
         int shieldLeft;
+        bool Isdead;
         MonsterMovement movement;
         std::vector<MonsterSkill> monsterSkill;
         int animIndex;

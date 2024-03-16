@@ -19,12 +19,12 @@ public:
     bool IsAllMonsterDead(std::vector<std::pair<Monsters::Monster,Vector2>> monsterInfo);
     bool IsAllTeamDead(std::vector<std::pair<Characters::Character,Vector2>> teamInfo);
     bool IsTeammatesDead(std::vector<std::pair<Characters::Character,Vector2>>& team);
-    void MonsterAttack(std::vector<std::pair<Monsters::Monster,Vector2>>& monsterInfo,std::vector<std::pair<Characters::Character,Vector2>>& team);
+    void MonsterAttack(Monsters::Monster& monster,std::vector<std::pair<Characters::Character,Vector2>>& team);
     void MonsterBuff(Monsters::Monster& monster);
     void WinArena(std::vector<Monsters::Monster>& monsterList, Monsters::Monster monsterDead);
     void LoseArena(Player &player);
 
-    void MonsterAnim(Monsters::Monster& monster);
+    void MonsterAnim(int& numMonsAttack,Monsters::Monster& monster, std::vector<std::pair<Characters::Character,Vector2>>& team);
     void CharacterAnim(Characters::Character& character);
 private:
     Monsters monsters;

@@ -28,7 +28,7 @@ bool ArenaSkillCheck::CheckStaminaLeft(Characters::Skill staminaExpSkill, int st
 
 void ArenaSkillCheck::AttackSkill(Characters::Character &character,int skillIndex, Monsters::Monster &monster, std::vector<std::pair<Monsters::Monster,Vector2>>& monsterInfo)
 {
-    if(character.skills[skillIndex].name == "Stab")
+    if(character.skills[skillIndex].type == "Single Attack" )
     {
         int damage = character.skills[skillIndex].damage;
         monster.shieldLeft -= damage;
@@ -39,7 +39,7 @@ void ArenaSkillCheck::AttackSkill(Characters::Character &character,int skillInde
             monster.healthLeft -= damage;
         }
     }
-    if(character.skills[skillIndex].name == "Swing")
+    if(character.skills[skillIndex].type == "Multi Attack")
     {
         for(auto& monsters : monsterInfo)
         {
@@ -66,13 +66,32 @@ void ArenaSkillCheck::BuffSkill(std::vector<std::pair<Characters::Character,Vect
 {
     if(team[characterIndex].first.skills[skillIndex].name == "Shield")
     {
-        team[characterIndex].first.shield += team[characterIndex].first.skills[skillIndex].defense;
+        team[characterIndex].first.shieldLeft += team[characterIndex].first.skills[skillIndex].defense;
     }
     if(team[characterIndex].first.skills[skillIndex].name == "Roar")
     {
         for(auto& character : team)
         {
-            character.first.shield += team[characterIndex].first.skills[skillIndex].defense;
+            character.first.shieldLeft += team[characterIndex].first.skills[skillIndex].defense;
+        }
+    }
+    if(team[characterIndex].first.skills[skillIndex].name == "Heal")
+    {
+        team[characterIndex].first.HPLeft += team[characterIndex].first.skills[skillIndex].healAmount;
+        if(team[characterIndex].first.HPLeft > team[characterIndex].first.HP)
+        {
+            team[characterIndex].first.HPLeft = team[characterIndex].first.HP;
+        }
+    }
+    if(team[characterIndex].first.skills[skillIndex].name == "Holy Heal")
+    {
+        for(auto& character : team)
+        {
+            character.first.HPLeft += team[characterIndex].first.skills[skillIndex].healAmount;
+            if(character.first.HPLeft > character.first.HP)
+            {
+                character.first.HPLeft = character.first.HP;
+            }
         }
     }
     team[characterIndex].first.manaLeft -= team[characterIndex].first.skills[skillIndex].manaExp;
@@ -96,8 +115,13 @@ bool ArenaSkillCheck::IsMonsterDead(std::vector<std::pair<Monsters::Monster,Vect
     {
         if(monster.first.healthLeft <= 0)
         {
-            monsterInfo.erase(monsterInfo.begin() + i);
-            return true;
+            monster.first.animIndex = 2;
+            if(monster.first.Isdead)
+            {
+                monsterInfo.erase(monsterInfo.begin() + i);
+                return true;
+            }
+            
         }
         i++;
     }
@@ -140,23 +164,22 @@ bool ArenaSkillCheck::IsTeammatesDead(std::vector<std::pair<Characters::Characte
     return false;
 }
 
-void ArenaSkillCheck::MonsterAttack(std::vector<std::pair<Monsters::Monster,Vector2>>& monsterInfo,std::vector<std::pair<Characters::Character,Vector2>>& team)
+void ArenaSkillCheck::MonsterAttack(Monsters::Monster& monster,std::vector<std::pair<Characters::Character,Vector2>>& team)
 {
-    for(auto& monster : monsterInfo)
-    {
-        monster.first.animIndex = 1;
-        int random = rand() % monster.first.monsterSkill.size();
 
-        if(monster.first.monsterSkill[random].name == "attack")
-        {
-            int damage = monster.first.monsterSkill[random].damage;
-            damage -= team[0].first.shieldLeft;
-            if(damage >= 0)
-            {
-                team[0].first.shieldLeft = 0;
-                team[0].first.HPLeft -= damage;
-            }
-        }
+    int random = (rand() % team.size());
+    
+    int damage = monster.monsterSkill[0].damage;
+    damage -= team[random].first.shieldLeft;
+    if(damage >= 0)
+    {
+        team[random].first.shieldLeft = 0;
+        team[random].first.HPLeft -= damage;
+    }
+    else
+    {
+        damage = monster.monsterSkill[0].damage;
+        team[random].first.shieldLeft -= damage;
     }
 }
 
@@ -177,11 +200,24 @@ void ArenaSkillCheck::LoseArena(Player &player)
     player.playerPos = {100,100};
 }
 
-void ArenaSkillCheck::MonsterAnim(Monsters::Monster &monster)
+void ArenaSkillCheck::MonsterAnim(int& numMonsAttack,Monsters::Monster &monster,std::vector<std::pair<Characters::Character,Vector2>>& team)
 {
     if(monster.name == "Slime")
     {
-        if(monster.animIndex == 1)
+        if(monster.animIndex == 0)
+        {
+            monster.anims[monster.animIndex].frame++;
+            if(monster.anims[monster.animIndex].frame > 12)
+            {
+                monster.anims[monster.animIndex].frame = 0;
+                monster.anims[monster.animIndex].source.x += 32;
+                if(monster.anims[monster.animIndex].source.x >=192)
+                {
+                    monster.anims[monster.animIndex].source = monster.anims[monster.animIndex].originalSource;
+                }
+            }
+        }
+        else if(monster.animIndex == 1)
         {
             monster.anims[monster.animIndex].frame++;
             if(monster.anims[monster.animIndex].frame > 6)
@@ -192,40 +228,29 @@ void ArenaSkillCheck::MonsterAnim(Monsters::Monster &monster)
                 {
                     monster.anims[monster.animIndex].source = monster.anims[monster.animIndex].originalSource;
                     monster.animIndex = 0;
+                    MonsterAttack(monster,team);
+                    numMonsAttack++;
                 }
             }
         }
-        else if(monster.animIndex == 0)
-        {
-            monster.anims[monster.animIndex].frame++;
-            if(monster.anims[monster.animIndex].frame > 12)
-            {
-                monster.anims[monster.animIndex].frame = 0;
-                monster.anims[monster.animIndex].source.x += 32;
-                if(monster.anims[monster.animIndex].source.x >=192)
-                {
-                monster.anims[monster.animIndex].source = monster.anims[monster.animIndex].originalSource;
-                }
-            }
-        }
-    }
-    if(monster.name == "Goblin")
-    {
-        if(monster.animIndex == 1)
+        else if(monster.animIndex == 2)
         {
             monster.anims[monster.animIndex].frame++;
             if(monster.anims[monster.animIndex].frame > 6)
             {
                 monster.anims[monster.animIndex].frame = 0;
                 monster.anims[monster.animIndex].source.x += 32;
-                if(monster.anims[monster.animIndex].source.x >= 288)
+                if(monster.anims[monster.animIndex].source.x >= monster.anims[monster.animIndex].image.width)
                 {
-                    monster.anims[monster.animIndex].source = monster.anims[monster.animIndex].originalSource;
-                    monster.animIndex = 0;
+                    monster.anims[monster.animIndex].source.x -= 32;
+                    monster.Isdead = true;
                 }
             }
         }
-        else if(monster.animIndex == 0)
+    }
+    if(monster.name == "Goblin")
+    {
+        if(monster.animIndex == 0)
         {
             monster.anims[monster.animIndex].frame++;
             if(monster.anims[monster.animIndex].frame > 12)
@@ -238,6 +263,37 @@ void ArenaSkillCheck::MonsterAnim(Monsters::Monster &monster)
                 }
             }
         }
+        else if(monster.animIndex == 1)
+        {
+            monster.anims[monster.animIndex].frame++;
+            if(monster.anims[monster.animIndex].frame > 6)
+            {
+                monster.anims[monster.animIndex].frame = 0;
+                monster.anims[monster.animIndex].source.x += 32;
+                if(monster.anims[monster.animIndex].source.x >= 288)
+                {
+                    monster.anims[monster.animIndex].source = monster.anims[monster.animIndex].originalSource;
+                    monster.animIndex = 0;
+                    MonsterAttack(monster,team);
+                    numMonsAttack++;
+                }
+            }
+        }
+        else if(monster.animIndex == 2)
+        {
+            monster.anims[monster.animIndex].frame++;
+            if(monster.anims[monster.animIndex].frame > 6)
+            {
+                monster.anims[monster.animIndex].frame = 0;
+                monster.anims[monster.animIndex].source.x += 32;
+                if(monster.anims[monster.animIndex].source.x >= monster.anims[monster.animIndex].image.width)
+                {
+                    monster.anims[monster.animIndex].source.x -= 32;
+                    monster.Isdead = true;
+                }
+            }
+        }
+        
     }
 
 }
@@ -251,7 +307,7 @@ void ArenaSkillCheck::CharacterAnim(Characters::Character &character)
         {
             character.anims[character.animIndex].frame = 0;
             character.anims[character.animIndex].source.x += 32;
-            if(character.anims[character.animIndex].source.x >=288)
+            if(character.anims[character.animIndex].source.x >= character.anims[character.animIndex].endSource.x)
             {
             character.anims[character.animIndex].source = character.anims[character.animIndex].originalSource;
             character.animIndex = 0;

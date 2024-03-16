@@ -85,6 +85,7 @@ void Monsters::Slime()
     slime.healthLeft = 100;
     slime.shield = 2;
     slime.shieldLeft = slime.shield;
+    slime.Isdead = false;
     MonsterSkill skill1;
     skill1.name = "attack";
     skill1.damage = 5;
@@ -125,7 +126,8 @@ void Monsters::Goblin()
     goblin.health = 200;
     goblin.healthLeft = goblin.health;
     goblin.shield = 5;
-    goblin.shieldLeft = slime.shield;
+    goblin.shieldLeft = goblin.shield;
+    goblin.Isdead = false;
     MonsterSkill skill1;
     skill1.name = "attack";
     skill1.damage = 7;
@@ -140,10 +142,17 @@ void Monsters::Goblin()
     idle.source = {0,(float)idle.image.height - 32,32.0f,32.0f};
     idle.originalSource = idle.source;
     goblin.anims.push_back(idle);
+        Animation attack;
+    attack.frame = 0;
+    attack.image = LoadTexture("sprites/monster/Orc-Peon-Cyan.png");
+    attack.source = {192,(float)idle.image.height - 32,32.0f,32.0f};
+    attack.originalSource = attack.source;
+    goblin.anims.push_back(attack);
+    goblin.animIndex = 0;
         Animation die;
     die.frame = 0;
     die.image = LoadTexture("sprites/monster/Orc-Peon-Cyan.png");
-    die.source = {192,(float)idle.image.height - 32,32.0f,32.0f};
+    die.source = {640,(float)idle.image.height - 32,32.0f,32.0f};
     die.originalSource = die.source;
     goblin.anims.push_back(die);
     goblin.animIndex = 0;

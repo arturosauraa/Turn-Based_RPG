@@ -18,6 +18,8 @@ public:
         float damage;
         //defense obtained by skill
         float defense;
+        //hp obtained by skill
+        float healAmount;
         //Hp healed by skill
         float health;
         //If this skill attacks one or more mosnters
@@ -44,6 +46,7 @@ public:
     {
         Texture2D image;
         Rectangle originalSource;
+        Rectangle endSource;
         Rectangle source;
         int frame;
     };
@@ -86,6 +89,7 @@ public:
     void CharactersUpdate();
     void CharactersDraw();
     void CharacterCreation();
+    Character MageCreation();
     Character PlayerCharacter();
 
 private:
