@@ -13,13 +13,13 @@ int main()
     InitWindow(1200, 800, "RPG");
     SetTargetFPS(60);
     Game game = Game();
-
-    while(WindowShouldClose() == false)
+    bool exitGame = false;
+    while(WindowShouldClose() == exitGame)
     {
         BeginDrawing();
 
         //Update
-        game.GameUpdate();
+        game.GameUpdate(exitGame);
         
 
         ClearBackground(Color{80,100,60, 255});

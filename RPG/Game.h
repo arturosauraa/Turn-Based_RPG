@@ -6,7 +6,7 @@ class Game{
 public:
     Camera2D camera;
     Game();
-    void GameUpdate();
+    void GameUpdate(bool& exitGame);
     void GameDraw();
 
 private:
@@ -19,7 +19,6 @@ private:
     Team team;
     bool arenaStarted;
 
-    bool exitGame = false;
     bool isOnMenu = true;
     
 };

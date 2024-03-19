@@ -8,15 +8,14 @@ Game::Game() : player(), map(), monster(), arena(), mainMenu()
     camera.zoom = 2.0f;
     fightStart = false;
     arenaStarted = false;
-    exitGame = false;
     isOnMenu = true;
 }
 
-void Game::GameUpdate()
+void Game::GameUpdate(bool& exitGame)
 {        
     if(isOnMenu)
     {
-        mainMenu.Update(isOnMenu, team.team);
+        mainMenu.Update(isOnMenu, team.team, exitGame,player);
     }
     else
     {
@@ -55,7 +54,7 @@ void Game::GameDraw()
 {
     if(isOnMenu)
     {
-        mainMenu.Draw(exitGame);
+        mainMenu.Draw();
     }
     else
     {

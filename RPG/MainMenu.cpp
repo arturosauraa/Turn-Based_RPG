@@ -4,8 +4,10 @@ MainMenu::MainMenu()
 {
     newGame = false;
     selectCharacter = false;
-    knight = character.PlayerCharacter();
+    knight = character.KnigthCharacter();
     mage = character.MageCreation();
+    archer = character.ArcherCharacter();
+    warrior = character.WarriorCharacter();
 
     rec1 = {25, 200, 250, 400};
     rec2 = {325, 200, 250, 400};
@@ -13,9 +15,9 @@ MainMenu::MainMenu()
     rec4 = {925, 200, 250, 400};
 
     characterType.push_back(std::make_pair(knight,rec1));
-    characterType.push_back(std::make_pair(knight,rec2));
-    characterType.push_back(std::make_pair(mage,rec3));
-    characterType.push_back(std::make_pair(mage,rec4));
+    characterType.push_back(std::make_pair(mage,rec2));
+    characterType.push_back(std::make_pair(archer,rec3));
+    characterType.push_back(std::make_pair(warrior,rec4));
 
     selectrec1 = {25, 625, 250, 100};
     selectrec2 = {325, 625, 250, 100};
@@ -28,19 +30,20 @@ MainMenu::MainMenu()
 
 }
 
-void MainMenu::Update(bool& isOnMenu,std::vector<Characters::Character>& team)
+void MainMenu::Update(bool& isOnMenu,std::vector<Characters::Character>& team, bool& exitGame, Player& player)
 {
     if(!newGame)
     {
         SelectNewGame();
+        ExitGame(exitGame);
     }
     else
     {
-        SelectCharacter(isOnMenu,team);
+        SelectCharacter(isOnMenu,team,player);
     }
 }
 
-void MainMenu::Draw(bool& exitGame)
+void MainMenu::Draw()
 {
     if(!newGame)
     {
@@ -54,7 +57,6 @@ void MainMenu::Draw(bool& exitGame)
         //EXIT
         DrawRectangleLines(GetScreenWidth()/2 - 100, GetScreenHeight()/2 + 150, 200, 100, WHITE);
         DrawText("EXIT", GetScreenWidth()/ 2 - 50, GetScreenHeight()/2 + 180, 30, WHITE);
-        ExitGame(exitGame);
     }
     else if(newGame)
     {
@@ -81,10 +83,10 @@ void MainMenu::Draw(bool& exitGame)
             DrawText(TextFormat("%i",character.first.stats.intelligence),character.second.x + 175,character.second.y + 250, 15, WHITE);
 
             DrawText("Skills", character.second.x + 100, character.second.y + 275, 20, WHITE);
-            DrawText(character.first.skills[0].name.c_str(), character.second.x + 50, character.second.y + 300, 20, WHITE);
-            DrawText(character.first.skills[1].name.c_str(), character.second.x + 150, character.second.y + 300, 20, WHITE);
-            DrawText(character.first.skills[2].name.c_str(), character.second.x + 50, character.second.y + 350, 20, WHITE);
-            DrawText(character.first.skills[3].name.c_str(), character.second.x + 150, character.second.y + 350, 20, WHITE);
+            DrawText(character.first.skills[0].name.c_str(), character.second.x + 10, character.second.y + 300, 20, WHITE);
+            DrawText(character.first.skills[1].name.c_str(), character.second.x + 130, character.second.y + 300, 20, WHITE);
+            DrawText(character.first.skills[2].name.c_str(), character.second.x + 10, character.second.y + 350, 20, WHITE);
+            DrawText(character.first.skills[3].name.c_str(), character.second.x + 130, character.second.y + 350, 20, WHITE);
         }
         ChangeFrames();
 
@@ -128,7 +130,7 @@ void MainMenu::SelectNewGame()
     }
 }
 
-void MainMenu::SelectCharacter(bool& isOnMenu,std::vector<Characters::Character>& team)
+void MainMenu::SelectCharacter(bool& isOnMenu,std::vector<Characters::Character>& team, Player& player)
 {
     if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
     {
@@ -142,8 +144,11 @@ void MainMenu::SelectCharacter(bool& isOnMenu,std::vector<Characters::Character>
             {
                 selectCharacter = true;
                 isOnMenu = false;
+                characterType[i].first.source.x = 0;
                 team.clear();
                 team.push_back(characterType[i].first);
+                player.playerImg = characterType[i].first.icon;
+                player.playerType = characterType[i].first.type;
             }
             i++;
         }

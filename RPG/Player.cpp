@@ -11,6 +11,7 @@ Player::Player()
     direction = "south";
     playerCenter = {playerPos.x + 16, playerPos.y + 16};
     playerRadius = 7;
+    playerType = "Knigth";
 }
 
 void Player::UpdatePlayer()
@@ -78,22 +79,43 @@ void Player::PlayerImg()
     if(direction == "west") source.y = 192;   
     if(direction == "southWest") source.y = 224;
     
-
-    frame++;
-    if(frame > 12)
+    if(playerType == "Knigth")
     {
-        frame = 0;
-        source.x += 32;
-        if(source.x >= 64 && (speedX == 0 && speedY == 0))
+        frame++;
+        if(frame > 12)
         {
+            frame = 0;
+            source.x += 32;
+            if(source.x >= 64 && (speedX == 0 && speedY == 0))
+            {
 
-            source.x = 0;
-        }
-        if(source.x >= 160 && (speedX != 0 || speedY != 0))
-        {
-            source.x = 64;
+                source.x = 0;
+            }
+            if(source.x >= 160 && (speedX != 0 || speedY != 0))
+            {
+                source.x = 64;
+            }
         }
     }
+    else
+    {
+        frame++;
+        if(frame > 12)
+        {
+            frame = 0;
+            source.x += 32;
+            if(source.x >= 64 && (speedX == 0 && speedY == 0))
+            {
+
+                source.x = 0;
+            }
+            if(source.x >= 128 && (speedX != 0 || speedY != 0))
+            {
+                source.x = 64;
+            }
+        }
+    }
+
 }
 
 void Player::IsPlayerCollidingWall()

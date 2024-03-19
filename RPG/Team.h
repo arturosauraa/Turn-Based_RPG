@@ -8,8 +8,8 @@ public:
 
     Characters::Character player;
     Characters::Character mage;
-    Characters::Character companion2;
-    Characters::Character companion3;
+    Characters::Character archer;
+    Characters::Character warrior;
     std::vector<Characters::Character> team;
 
     int typeSelected;

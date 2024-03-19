@@ -14,6 +14,7 @@ public:
     std::string direction;
     float speedX;
     float speedY;
+    std::string playerType;
 
     Monsters::Monster monsterEncounter;
 

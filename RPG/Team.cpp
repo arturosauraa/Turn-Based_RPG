@@ -2,8 +2,10 @@
 
 Team::Team()
 {
-    player = characters.PlayerCharacter();
+    player = characters.KnigthCharacter();
     mage = characters.MageCreation();
+    archer = characters.ArcherCharacter();
+    warrior = characters.WarriorCharacter();
     team.push_back(player);
     team.push_back(mage);
     typeSelected = 0;
@@ -18,15 +20,15 @@ void Team::TeamUpdate()
     }
     if(typeSelected == 2)
     {
-        team.push_back(player);
-    }
-    if(typeSelected == 3)
-    {
         team.push_back(mage);
     }
     if(typeSelected == 3)
     {
-        team.push_back(mage);
+        team.push_back(archer);
+    }
+    if(typeSelected == 3)
+    {
+        team.push_back(warrior);
     }
 }
 

@@ -81,7 +81,7 @@ public:
         int animIndex;
         std::vector<Animation> anims;
     };
-    Character player;
+    Character knigth;
 
     std::vector<Character> characterlist;
 
@@ -91,7 +91,9 @@ public:
     void CharactersDraw();
     void CharacterCreation();
     Character MageCreation();
-    Character PlayerCharacter();
+    Character KnigthCharacter();
+    Character ArcherCharacter();
+    Character WarriorCharacter();
 
 private:
 
