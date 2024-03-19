@@ -59,6 +59,7 @@ public:
         //Character Icon
         Texture2D icon;
         Rectangle source;
+        int frame;
         //Character Level
         int level;
         //Character HP

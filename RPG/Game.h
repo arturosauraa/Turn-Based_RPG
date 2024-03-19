@@ -1,5 +1,4 @@
 #pragma once
-#include "Player.h"
 #include "Arena.h"
 
 class Game{
@@ -11,6 +10,7 @@ public:
     void GameDraw();
 
 private:
+    MainMenu mainMenu;
     bool fightStart;
     Player player;
     Map map;
@@ -18,4 +18,8 @@ private:
     Arena arena;
     Team team;
     bool arenaStarted;
+
+    bool exitGame = false;
+    bool isOnMenu = true;
+    
 };

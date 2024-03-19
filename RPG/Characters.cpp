@@ -24,8 +24,9 @@ Characters::Character Characters::MageCreation()
     mage.name = "Mage";
     mage.type = "Mage";
     mage.icon = LoadTexture("sprites/character/Mage-Red.png");
-    mage.source = {0,32,32.0f,32.0f};
+    mage.source = {0,0,32.0f,32.0f};
     mage.level = 1;
+    mage.frame = 0;
         //mage stats
     mage.stats.vitality = 7;
     mage.stats.strength = 8;
@@ -106,8 +107,9 @@ Characters::Character Characters::PlayerCharacter()
     player.name = "Player";
     player.type = "Knight";
     player.icon = LoadTexture("sprites/character/Human-Soldier-Red.png");
-    player.source = {0,32,32.0f,32.0f};
+    player.source = {0,0,32.0f,32.0f};
     player.level = 1;
+    player.frame = 0;
         //Player stats
     player.stats.vitality = 10;
     player.stats.strength = 5;

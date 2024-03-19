@@ -102,10 +102,10 @@ void Arena::GetMonster(Monsters::Monster& monster)
     monsterId = monster;
 }
 
-void Arena::GetTeam(std::vector<Characters::Character>& team)
+void Arena::GetTeam(std::vector<Characters::Character>& teams)
 {
     int i = 0;
-    for(auto& character : team)
+    for(auto& character : teams)
     {
         teamInfo.push_back(std::make_pair(character,teamPos[i++]));
     }

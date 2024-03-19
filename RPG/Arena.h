@@ -1,6 +1,5 @@
 #pragma once
-#include "Player.h"
-#include "Team.h"
+#include "MainMenu.h"
 #include "ArenaSkillCheck.h"
 
 
@@ -12,7 +11,7 @@ public:
     Arena();
     void ArenaUpdate(std::vector<Monsters::Monster>& monsterList,bool& figthStarted,bool& arenaStarted,Player &player);
     void GetMonster(Monsters::Monster& monster);
-    void GetTeam(std::vector<Characters::Character>& team);
+    void GetTeam(std::vector<Characters::Character>& teams);
     void ArenaDraw();
     void TeamDraw();
     void MonsterDraw();

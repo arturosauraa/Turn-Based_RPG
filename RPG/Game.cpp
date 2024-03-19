@@ -1,6 +1,6 @@
 #include "Game.h"
 
-Game::Game() : player(), map(), monster(), arena()
+Game::Game() : player(), map(), monster(), arena(), mainMenu()
 {
     camera.target = player.playerPos;
     camera.offset = (Vector2){GetScreenWidth()/2.0f,GetScreenHeight()/2.0f};
@@ -8,50 +8,68 @@ Game::Game() : player(), map(), monster(), arena()
     camera.zoom = 2.0f;
     fightStart = false;
     arenaStarted = false;
+    exitGame = false;
+    isOnMenu = true;
 }
 
 void Game::GameUpdate()
-{
+{        
+    if(isOnMenu)
+    {
+        mainMenu.Update(isOnMenu, team.team);
+    }
+    else
+    {
+        if(!fightStart)
+        {
+            if(player.IsPlayerCollidingMonster(monster.monsterList))
+            {
+                fightStart = true;
+            }
+            camera.target = player.playerPos;
+            map.UpdateMap();
+            player.UpdatePlayer();
+            monster.MonstersUpdate();
+        }
+        if(fightStart)
+        {
+            if(!arenaStarted)
+            {
 
-    if(!fightStart)
-    {
-        if(player.IsPlayerCollidingMonster(monster.monsterList))
-        {
-            fightStart = true;
-        }
-        camera.target = player.playerPos;
-        map.UpdateMap();
-        player.UpdatePlayer();
-        monster.MonstersUpdate();
-    }
-    if(fightStart)
-    {
-        if(!arenaStarted)
-        {
-            arena.GetMonster(player.monsterEncounter);
-            arena.GetTeam(team.team);
-            arenaStarted = true; 
-        }
-        else
-        {
-            arena.ArenaUpdate(monster.monsterList,fightStart,arenaStarted,player);
+                arena.GetMonster(player.monsterEncounter);
+                arena.GetTeam(team.team);
+                arenaStarted = true; 
+            }
+            else
+            {
+                arena.ArenaUpdate(monster.monsterList,fightStart,arenaStarted,player);
+            }
         }
     }
+
+
 
 }
 
 void Game::GameDraw()
 {
-    if(!fightStart)
+    if(isOnMenu)
     {
-        BeginMode2D(camera);
-        map.DrawMap();
-        monster.MonstersDraw();
-        player.DrawPlayer();
-        EndMode2D();
+        mainMenu.Draw(exitGame);
     }
     else
     {
-        arena.ArenaDraw();
+        if(!fightStart)
+        {
+            BeginMode2D(camera);
+            map.DrawMap();
+            monster.MonstersDraw();
+            player.DrawPlayer();
+            EndMode2D();
+        }
+        else
+        {
+            arena.ArenaDraw();
+        }
     }
 }
