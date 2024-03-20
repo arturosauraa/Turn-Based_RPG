@@ -16,6 +16,7 @@ void Game::GameUpdate(bool& exitGame)
     if(isOnMenu)
     {
         mainMenu.Update(isOnMenu, team.team, exitGame,player);
+        
     }
     else
     {
@@ -34,7 +35,7 @@ void Game::GameUpdate(bool& exitGame)
         {
             if(!arenaStarted)
             {
-
+                team.CreateTeam();
                 arena.GetMonster(player.monsterEncounter);
                 arena.GetTeam(team.team);
                 arenaStarted = true; 

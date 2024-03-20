@@ -17,7 +17,7 @@ public:
     Team();
     void TeamUpdate();
     void TeamDraw();
-    void SetPlayer(int& typeSelect);
+    void CreateTeam();
 
 private:
 Characters characters;

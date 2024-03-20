@@ -277,8 +277,6 @@ void Arena::CharacterSkillsDraw()
             DrawText(teamInfo[characterIndex].first.skills[1].name.c_str(),GetScreenWidth() / 2 + 100, 575, 30, WHITE);
             DrawText(teamInfo[characterIndex].first.skills[2].name.c_str(),GetScreenWidth() / 2 + 100, 650, 30, WHITE);
             DrawText(teamInfo[characterIndex].first.skills[3].name.c_str(),GetScreenWidth() / 2 + 100, 750, 30, WHITE);
-
-            //Skill Stats
         }
     }
 
