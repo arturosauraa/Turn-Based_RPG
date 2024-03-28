@@ -2,17 +2,42 @@
 
 Monsters::Monsters()
 {
-    posCompleted = false;
-    for(int i = 0; i< 10; i++)
+    nameList = {"Slime", "Simple Goblin"};
+    for(int i = 0; i < 20; i++)
     {
-        Slime();
-        Goblin();
-    }    
-    
+        int random = (rand() % 1);
+        monsterList.push_back(CreateMonster(nameList[random]));
+    }
+
     MonsterPosition();
 }
 
-void Monsters::MonstersUpdate()
+void Monsters::Update()
+{
+    MovementInMap();
+}
+
+void Monsters::Draw()
+{
+    for(auto& monster : monsterList)
+    {
+        DrawTextureRec(monster.movement.monsterImg,monster.movement.monsterSource, monster.movement.monsterPos, WHITE);
+    }
+}
+
+void Monsters::MonsterPosition()
+{
+    int i = 300;
+    for(auto& monster : monsterList)
+    {
+        int random = rand() % map.cellWithoutTrees.size() - 1;
+        
+        monster.movement.monsterPos = map.cellWithoutTrees[random];
+        monster.movement.monsterCenter = {monster.movement.monsterPos.x + 10, monster.movement.monsterPos.y + 10};
+    } 
+}
+
+void Monsters::MovementInMap()
 {
     for(auto& monster : monsterList)
     {
@@ -56,118 +81,151 @@ void Monsters::MonstersUpdate()
     }
 }
 
-void Monsters::MonstersDraw()
+Monsters::Monster Monsters::CreateMonster(string monsterName)
 {
-    for(auto& monster : monsterList)
+    Monster monster;
+    monster.name = monsterName;
+    monster.basePower = GetBasePower(monsterName);
+    monster.defense = GetDefense(monsterName);
+    monster.movement = GetMovement(monsterName);
+    monster.anim = GetAnims(monsterName);
+    monster.skills = GetSkills(monsterName);
+    monster.animIndex = 0;
+    monster.isDead = false;
+
+    return monster;
+}
+
+Monsters::Defense Monsters::GetDefense(string monsterName)
+{
+    Defense defense;
+    int physicalDefense;
+    int magicalDefense;
+    if(monsterName == "Simple Goblin")
     {
-        DrawTextureRec(monster.movement.monsterImg,monster.movement.monsterSource, monster.movement.monsterPos, WHITE);
+        physicalDefense = (rand() % 10) + 20;
+        magicalDefense = (rand() % 1) + 10;
     }
-}
-
-void Monsters::MonsterMovement()
-{
-
-}
-
-void Monsters::Slime()
-{
-    slime.name = "Slime";
-    slime.movement.speedX = 2;
-    slime.movement.speedY = 2;
-    slime.movement.monsterImg = LoadTexture("sprites/monster/Slime.png");
-    slime.movement.frame = 0;
-    slime.movement.monsterSource = {0,32,32.0f,32.0f};
-    slime.movement.monsterPos = {0,0};
-    slime.movement.monsterRadius = 5;
-    slime.movement.monsterCenter = {slime.movement.monsterPos.x + 10, slime.movement.monsterPos.y + 10};
-
-    slime.health = 100;
-    slime.healthLeft = 100;
-    slime.shield = 2;
-    slime.shieldLeft = slime.shield;
-    slime.Isdead = false;
-    MonsterSkill skill1;
-    skill1.name = "attack";
-    skill1.damage = 5;
-    skill1.defense = 1;
-    skill1.repeatAttack = 0;
-    skill1.singleAttack = true;
-    slime.monsterSkill.push_back(skill1);
-
-    Animation idle;
-    idle.frame = 0;
-    idle.image = LoadTexture("sprites/monster/Slime.png");
-    idle.source = {0,0,32.0f,32.0f};
-    idle.originalSource = idle.source;
-    slime.anims.push_back(idle);
-        Animation die;
-    die.frame = 0;
-    die.image = LoadTexture("sprites/monster/Slime.png");
-    die.source = {192,0,32.0f,32.0f};
-    die.originalSource = die.source;
-    slime.anims.push_back(die);
-    slime.animIndex = 0;
-
-    monsterList.push_back(slime);
-}
-
-void Monsters::Goblin()
-{
-    goblin.name = "Goblin";
-    goblin.movement.speedX = 2;
-    goblin.movement.speedY = 2;
-    goblin.movement.monsterImg = LoadTexture("sprites/monster/Orc-Peon-Cyan.png");
-    goblin.movement.frame = 0;
-    goblin.movement.monsterSource = {0,0,32.0f,32.0f};
-    goblin.movement.monsterPos = {0,0};
-    goblin.movement.monsterRadius = 5;
-    goblin.movement.monsterCenter = {goblin.movement.monsterPos.x + 10, goblin.movement.monsterPos.y + 10};
-
-    goblin.health = 200;
-    goblin.healthLeft = goblin.health;
-    goblin.shield = 5;
-    goblin.shieldLeft = goblin.shield;
-    goblin.Isdead = false;
-    MonsterSkill skill1;
-    skill1.name = "attack";
-    skill1.damage = 7;
-    skill1.defense = 3;
-    skill1.repeatAttack = 0;
-    skill1.singleAttack = true;
-    goblin.monsterSkill.push_back(skill1);
-
-        Animation idle;
-    idle.frame = 0;
-    idle.image = LoadTexture("sprites/monster/Orc-Peon-Cyan.png");
-    idle.source = {0,(float)idle.image.height - 32,32.0f,32.0f};
-    idle.originalSource = idle.source;
-    goblin.anims.push_back(idle);
-        Animation attack;
-    attack.frame = 0;
-    attack.image = LoadTexture("sprites/monster/Orc-Peon-Cyan.png");
-    attack.source = {192,(float)idle.image.height - 32,32.0f,32.0f};
-    attack.originalSource = attack.source;
-    goblin.anims.push_back(attack);
-    goblin.animIndex = 0;
-        Animation die;
-    die.frame = 0;
-    die.image = LoadTexture("sprites/monster/Orc-Peon-Cyan.png");
-    die.source = {640,(float)idle.image.height - 32,32.0f,32.0f};
-    die.originalSource = die.source;
-    goblin.anims.push_back(die);
-    goblin.animIndex = 0;
-
-    monsterList.push_back(goblin);
-}
-
-void Monsters::MonsterPosition()
-{
-    int i = 300;
-    for(auto& monster : monsterList)
+    if(monsterName == "Slime")
     {
-        int random = rand() % map.cellWithoutTrees.size() - 1;
-        
-        monster.movement.monsterPos = map.cellWithoutTrees[random];
-        monster.movement.monsterCenter = {monster.movement.monsterPos.x + 10, monster.movement.monsterPos.y + 10};
-    } 
+        physicalDefense = (rand() % 10) + 15;
+        magicalDefense = (rand() % 1) + 5;
+    }
+    defense.physicalDefense = physicalDefense;
+    defense.magicalDefense = magicalDefense;
+    return defense;
+}
+
+Monsters::BasePower Monsters::GetBasePower(string monsterName)
+{
+    BasePower basePower;
+    int monsterHP;
+    if(monsterName == "Slime")
+    {
+        monsterHP = (rand() % 100) + 80;
+    }
+    if(monsterName == "Simple Goblin")
+    {
+        monsterHP = (rand() % 77) + 100;
+    }
+    basePower.HP = monsterHP;
+    basePower.HPLeft = basePower.HP;
+    return basePower;
+}
+
+Monsters::Movement Monsters::GetMovement(string monsterName)
+{
+    Movement movement;
+    if(monsterName == "Slime")
+    {
+        movement.monsterImg = LoadTexture("sprites/monster/Slime.png");
+        movement.frame = 0;
+        movement.monsterSource = {0,32,32.0f,32.0f};
+        movement.monsterPos = {0,0};
+        movement.monsterRadius = 5;
+        movement.monsterCenter = {movement.monsterPos.x + 10, movement.monsterPos.y + 10};
+        movement.reverseImg = false;
+    }
+    if(monsterName == "Simple Goblin")
+    {
+        movement.monsterImg = LoadTexture("sprites/monster/Orc-Peon-Cyan.png");
+        movement.frame = 0;
+        movement.monsterSource = {0,0,32.0f,32.0f};
+        movement.monsterPos = {0,0};
+        movement.monsterRadius = 5;
+        movement.monsterCenter = {movement.monsterPos.x + 10, movement.monsterPos.y + 10};
+    }
+    return movement;
+}
+
+vector<Monsters::Skill> Monsters::GetSkills(string monsterName)
+{
+    vector<Skill> skillList;
+    Skill skill1;
+    Skill skill2;
+    Skill skill3;
+    Skill skill4;
+    if(monsterName == "Slime")
+    {
+        skill1.name = "Attack";
+        skill1.type = "Magical";
+        skill1.magicalDamage = (rand() % 10) + 13;
+    }
+    if(monsterName == "Simple Goblin")
+    {
+        skill1.name = "Attack";
+        skill1.type = "Physical";
+        skill1.physicalDamage = (rand() % 10) + 20;
+        skillList.push_back(skill1);
+    }
+    skillList.push_back(skill1);
+    return skillList;
+}
+
+vector<Monsters::Anim> Monsters::GetAnims(string monsterName)
+{
+    vector<Anim> animList;
+    Anim idle;
+    Anim attack;
+    Anim die;
+    if(monsterName == "Slime")
+    {
+        idle.frame = 0;
+        idle.image = LoadTexture("sprites/monster/Slime.png");
+        idle.source = {0,0,32.0f,32.0f};
+        idle.endSource = {192,0,32.0f,32.0f};
+        idle.originalSource = idle.source;
+        animList.push_back(idle);
+
+        die.frame = 0;
+        die.image = LoadTexture("sprites/monster/Slime.png");
+        die.source = {192,0,32.0f,32.0f};
+        die.endSource = {(float)die.image.width, 0, 32.0f, 32.0f};
+        die.originalSource = die.source;
+        animList.push_back(die);
+    }
+    if(monsterName == "Simple Goblin")
+    {
+        idle.frame = 0;
+        idle.image = LoadTexture("sprites/monster/Orc-Peon-Cyan.png");
+        idle.source = {0,(float)idle.image.height - 32,32.0f,32.0f};
+        idle.endSource = {64,(float)idle.image.height - 32,32.0f,32.0f};
+        idle.originalSource = idle.source;
+        animList.push_back(idle);
+
+        attack.frame = 0;
+        attack.image = LoadTexture("sprites/monster/Orc-Peon-Cyan.png");
+        attack.source = {192,(float)idle.image.height - 32,32.0f,32.0f};
+        attack.endSource = {288,(float)idle.image.height - 32,32.0f,32.0f};
+        attack.originalSource = attack.source;
+        animList.push_back(attack);
+
+        die.frame = 0;
+        die.image = LoadTexture("sprites/monster/Orc-Peon-Cyan.png");
+        die.source = {640,(float)idle.image.height - 32,32.0f,32.0f};
+        die.endSource = {(float)die.image.width, (float)idle.image.height - 32, 32.0f, 32.0f};
+        die.originalSource = die.source;
+        animList.push_back(die);
+    }
+    return animList;
 }

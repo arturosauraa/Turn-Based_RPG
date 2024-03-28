@@ -1,6 +1,7 @@
 #pragma once
 #include "MainMenu.h"
-#include "ArenaSkillCheck.h"
+#include "TeamSkills.h"
+#include "MonsterSkill.h"
 
 
 class Arena
@@ -18,7 +19,7 @@ public:
     void SelectCharacter();
     void CharacterSkillsDraw();
     void EndRound();
-    void MonsterSkill();
+    void MonstersSkill();
     void CharacterSkill(int skillIndex);
     void RestartArena();
     void SelectMonster();
@@ -31,7 +32,8 @@ private:
     Team team;
     Characters character;
     Monsters monster;
-    ArenaSkillCheck ArenaSkillCheck;
+    TeamSkills teamSkills;
+    MonsterSkill monsterSkills;
     int arena1[7][19];
 
     //info of the team and monster

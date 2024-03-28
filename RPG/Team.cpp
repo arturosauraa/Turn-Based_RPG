@@ -2,11 +2,10 @@
 
 Team::Team()
 {
-    player = characters.KnigthCharacter();
-    mage = characters.MageCreation();
-    archer = characters.ArcherCharacter();
-    warrior = characters.WarriorCharacter();
-    typeSelected = 0;
+    player = characters.CreateCharacter("Simple Knigth", "Knigth");
+    mage = characters.CreateCharacter("Simple Mage", "Mage");
+    archer = characters.CreateCharacter("Simple Archer", "Archer");
+    warrior = characters.CreateCharacter("Simple Warrior", "Warrior");
 }
 
 void Team::TeamUpdate()
@@ -22,7 +21,5 @@ void Team::TeamDraw()
 
 void Team::CreateTeam()
 {
-    team.push_back(archer);
-    team.push_back(mage);
-    team.push_back(warrior);
+    
 }

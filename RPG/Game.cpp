@@ -29,7 +29,7 @@ void Game::GameUpdate(bool& exitGame)
             camera.target = player.playerPos;
             map.UpdateMap();
             player.UpdatePlayer();
-            monster.MonstersUpdate();
+            monster.Update();
         }
         if(fightStart)
         {
@@ -63,7 +63,7 @@ void Game::GameDraw()
         {
             BeginMode2D(camera);
             map.DrawMap();
-            monster.MonstersDraw();
+            monster.Draw();
             player.DrawPlayer();
             EndMode2D();
         }

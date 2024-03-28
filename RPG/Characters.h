@@ -4,30 +4,7 @@
 class Characters
 {
 public:
-    struct Skill
-    {
-        //Skill name
-        std::string name;
-        //Skill Type
-        std::string type;
-        //Mana needed for skill
-        int manaExp;
-        //stamina needed for skill
-        int staminaExp;
-        //Damage done by skill
-        float damage;
-        //defense obtained by skill
-        float defense;
-        //hp obtained by skill
-        float healAmount;
-        //Hp healed by skill
-        float health;
-        //If this skill attacks one or more mosnters
-        bool singleMonsterAttack;
-        //If this skill is done to one or more players in the team;
-        bool singlePlayerAttack;
-    };
-    struct Stats
+    struct Attributes
     {
         //HP
         int vitality;
@@ -42,26 +19,15 @@ public:
         //Mana
         int intelligence;
     };
-    struct Animation
+    struct Defense
     {
-        Texture2D image;
-        Rectangle originalSource;
-        Rectangle endSource;
-        Rectangle source;
-        int frame;
+        int defense;
+        int defenseLeft;
+        int physical;
+        int magical;
     };
-    struct Character
+    struct BasePower
     {
-        //Character name
-        std::string name;
-        //Character type : Knigth/Archer/Mage/Assasin
-        std::string type;
-        //Character Icon
-        Texture2D icon;
-        Rectangle source;
-        int frame;
-        //Character Level
-        int level;
         //Character HP
         int HP;
         int HPLeft;
@@ -71,31 +37,87 @@ public:
         //Character Mana
         int mana;
         int manaLeft;
-        //Character Shield
-        int shield;
-        int shieldLeft;
-        //Character stats
-        Stats stats;
-        //Character skills
-        std::vector<Skill> skills;
-        int animIndex;
-        std::vector<Animation> anims;
     };
+    struct Animation
+    {
+        Texture2D image;
+        Rectangle originalSource;
+        Rectangle endSource;
+        Rectangle source;
+        int frame;
+    };
+    struct Icon
+    {
+        Texture2D image;
+        Rectangle originalSource;
+        Rectangle endSource;
+        Rectangle source;
+        int frame;
+    };
+    struct Skill
+    {
+        //Skill name
+        std::string name;
+        //Skill Type
+        std::string type;
+        //Mana needed for skill
+        int manaExp;
+        //stamina needed for skill
+        int staminaExp;
+        //Damage done by skill
+        float damagePhysical;
+        //defense obtained by skill
+        float increaseDefensePhysical;
+        float increaseDefenseMagic;
+
+        float increaseDamagePhysical;
+        float increaseDamageMagic;
+        //hp obtained by skill
+        float healAmount;
+        //Damage dealt to itself
+        float selfDamage;
+        //magic done by skill
+        float damageMagic;
+        //If this skill attacks one or more monsters
+        bool singleTarget;
+        //If this skill targets itself or more teamates
+        bool targetMonster;
+    };
+    struct Character
+    {
+        std::string name;
+        std::string role;
+        int level;
+        std::vector<Animation> anim;
+        int animIndex;
+        Icon icon;
+        BasePower basePower;
+        Defense defense;
+        Attributes attribute;
+        std::vector<Skill> skills;
+
+    };
+    
+    std::vector<std::string> roleList;
+
+    Characters();
+    Character CreateCharacter(std::string characterName,std::string characterClass);
+    std::string GetRole(std::string role);
+    Icon GetIcon(std::string& role);
+    Attributes GetAttributes(std::string& role);
+    Defense GetDefense(Attributes& attribute, std::string& role);
+    BasePower GetBasePower(int level, Attributes& attribute, std::string& role);
+    int GetHP(int level,int HP,Attributes& attribute);
+    int GetStamina(int level,int stamina,Attributes& attribute);
+    int GetMana(int level,int mana,Attributes& attribute);
+    std::vector<Animation> GetAnim(std::string& role);
+    std::vector<Skill> GetSkill(Attributes& attribute, std::string& role);
+
     Character knigth;
 
     std::vector<Character> characterlist;
 
 
-    Characters();
-    void CharactersUpdate();
-    void CharactersDraw();
-    void CharacterCreation();
-    Character MageCreation();
-    Character KnigthCharacter();
-    Character ArcherCharacter();
-    Character WarriorCharacter();
-
-private:
-
+    
 
 };

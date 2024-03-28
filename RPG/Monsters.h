@@ -1,67 +1,78 @@
 #pragma once
 #include "Map.h"
 
+using namespace std;
+
 class Monsters
 {
+private:
+
+
+
+    Map map;
+
 public:
 
-    struct MonsterSkill
+    struct Movement
     {
-        std::string name;
-        float damage;
-        float defense;
-        bool singleAttack;
-        int repeatAttack;
-    };
-    struct Animation
-    {
-        Texture2D image;
-        Rectangle originalSource;
-        Rectangle source;
-        int frame;
-    };
-    struct MonsterMovement
-    {
-        
         Texture2D monsterImg;
         Rectangle monsterSource;
         Vector2 monsterPos;
         Vector2 monsterCenter;
         int monsterRadius;
         int frame;
-        std::string direction;
-        float speedX;
-        float speedY;
         bool reverseImg;
     };
-    struct Monster
+    struct Anim
     {
-        std::string name;
-        int health;
-        int healthLeft;
-        int shield;
-        int shieldLeft;
-        bool Isdead;
-        MonsterMovement movement;
-        std::vector<MonsterSkill> monsterSkill;
-        int animIndex;
-        std::vector<Animation> anims;
+        string name;
+        Texture2D image;
+        Rectangle originalSource;
+        Rectangle endSource;
+        Rectangle source;
+        int frame;
+    };
+    struct Defense
+    {
+        float physicalDefense;
+        float magicalDefense;
+    };
+    struct BasePower
+    {
+        int HP;
+        int HPLeft;
+    };
+    struct Skill
+    {
+        string name;
+        string type;
+        float physicalDamage;
+        float magicalDamage;
     };
 
-
-    Monster goblin;
-    Monster slime;
-    std::vector<Monster> monsterList;
+    struct Monster
+    {
+        string name;
+        vector<Skill> skills;
+        vector<Anim> anim;
+        Defense defense;
+        BasePower basePower;
+        Movement movement;
+        int animIndex;
+        bool isDead;
+    };
+    vector<Monster> monsterList;
+    vector<string> nameList;
 
     Monsters();
-    void MonstersUpdate();
-    void MonstersDraw();
-    void MonsterMovement();
-    void Slime();
-    void Goblin();
+    void Update();
+    void Draw();
     void MonsterPosition();
-private:
-    Map map;
-    int posCompleted;
-
+    void MovementInMap();
+    Monster CreateMonster(string monsterName);
+    Defense GetDefense(string monsterName);
+    BasePower GetBasePower(string monsterName);
+    Movement GetMovement(string monsterName);
+    vector<Skill> GetSkills(string monsterName);
+    vector<Anim> GetAnims(string monsterName);
 };

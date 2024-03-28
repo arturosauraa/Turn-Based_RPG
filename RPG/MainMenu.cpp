@@ -4,10 +4,10 @@ MainMenu::MainMenu()
 {
     newGame = false;
     selectCharacter = false;
-    knight = character.KnigthCharacter();
-    mage = character.MageCreation();
-    archer = character.ArcherCharacter();
-    warrior = character.WarriorCharacter();
+    knight = character.CreateCharacter("Simple Knigth", "Knigth");
+    mage = character.CreateCharacter("Simple Mage", "Mage");
+    archer = character.CreateCharacter("Simple Archer", "Archer");
+    warrior = character.CreateCharacter("Simple Warrior", "Warrior");
 
     rec1 = {25, 200, 250, 400};
     rec2 = {325, 200, 250, 400};
@@ -64,23 +64,23 @@ void MainMenu::Draw()
         for(auto& character : characterType)
         {
             DrawRectangleLinesEx(character.second, 2, WHITE);
-            DrawText(character.first.type.c_str(),character.second.x + 100,character.second.y + 20, 20, WHITE);
-            DrawTexturePro(character.first.icon,character.first.source,Rectangle{character.second.x + 75, character.second.y + 50, 100, 100},Vector2{0,0}, 0, WHITE);
+            DrawText(character.first.role.c_str(),character.second.x + 100,character.second.y + 20, 20, WHITE);
+            DrawTexturePro(character.first.icon.image,character.first.icon.source,Rectangle{character.second.x + 75, character.second.y + 50, 100, 100},Vector2{0,0}, 0, WHITE);
             
             DrawText("LEVEL: ", character.second.x + 25, character.second.y + 130, 15, WHITE);
             DrawText(TextFormat("%i",character.first.level),character.second.x + 175,character.second.y + 130, 15, WHITE);
             DrawText("VITALITY: ", character.second.x + 25, character.second.y + 150, 15, WHITE);
-            DrawText(TextFormat("%i",character.first.stats.vitality),character.second.x + 175,character.second.y + 150, 15, WHITE);
+            DrawText(TextFormat("%i",character.first.attribute.vitality),character.second.x + 175,character.second.y + 150, 15, WHITE);
             DrawText("STRENGTH: ", character.second.x + 25, character.second.y + 170, 15, WHITE);
-            DrawText(TextFormat("%i",character.first.stats.strength),character.second.x + 175,character.second.y + 170, 15, WHITE);
+            DrawText(TextFormat("%i",character.first.attribute.strength),character.second.x + 175,character.second.y + 170, 15, WHITE);
             DrawText("ENDURANCE: ", character.second.x + 25, character.second.y + 190, 15, WHITE);
-            DrawText(TextFormat("%i",character.first.stats.endurance),character.second.x + 175,character.second.y + 190, 15, WHITE);
+            DrawText(TextFormat("%i",character.first.attribute.endurance),character.second.x + 175,character.second.y + 190, 15, WHITE);
             DrawText("DEXTERITY: ", character.second.x + 25, character.second.y + 210, 15, WHITE);
-            DrawText(TextFormat("%i",character.first.stats.dexterity),character.second.x + 175,character.second.y + 210, 15, WHITE);
+            DrawText(TextFormat("%i",character.first.attribute.dexterity),character.second.x + 175,character.second.y + 210, 15, WHITE);
             DrawText("RESISTANCE: ", character.second.x + 25, character.second.y + 230, 15, WHITE);
-            DrawText(TextFormat("%i",character.first.stats.resistance),character.second.x + 175,character.second.y + 230, 15, WHITE);
+            DrawText(TextFormat("%i",character.first.attribute.resistance),character.second.x + 175,character.second.y + 230, 15, WHITE);
             DrawText("INTELLIGENCE: ", character.second.x + 25, character.second.y + 250, 15, WHITE);
-            DrawText(TextFormat("%i",character.first.stats.intelligence),character.second.x + 175,character.second.y + 250, 15, WHITE);
+            DrawText(TextFormat("%i",character.first.attribute.intelligence),character.second.x + 175,character.second.y + 250, 15, WHITE);
 
             DrawText("Skills", character.second.x + 100, character.second.y + 275, 20, WHITE);
             DrawText(character.first.skills[0].name.c_str(), character.second.x + 10, character.second.y + 300, 20, WHITE);
@@ -144,11 +144,11 @@ void MainMenu::SelectCharacter(bool& isOnMenu,std::vector<Characters::Character>
             {
                 selectCharacter = true;
                 isOnMenu = false;
-                characterType[i].first.source.x = 0;
+                characterType[i].first.icon.source.x = 0;
                 team.clear();
                 team.push_back(characterType[i].first);
-                player.playerImg = characterType[i].first.icon;
-                player.playerType = characterType[i].first.type;
+                player.playerImg = characterType[i].first.icon.image;
+                player.playerType = characterType[i].first.role;
             }
             i++;
         }
@@ -159,14 +159,14 @@ void MainMenu::ChangeFrames()
 {
     for(auto& character : characterType)
     {
-        character.first.frame++;
-        if(character.first.frame > 12)
+        character.first.icon.frame++;
+        if(character.first.icon.frame > 12)
         {
-            character.first.frame = 0;
-            character.first.source.x += 32;
-            if(character.first.source.x >= character.first.icon.width)
+            character.first.icon.frame = 0;
+            character.first.icon.source.x += 32;
+            if(character.first.icon.source.x >= character.first.icon.image.width)
             {
-                character.first.source.x = 0;
+                character.first.icon.source.x = 0;
             }
         }
     }

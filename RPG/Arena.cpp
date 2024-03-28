@@ -123,27 +123,27 @@ void Arena::ArenaUpdate(std::vector<Monsters::Monster>& monsterList,bool& figthS
     }
     else 
     {
-        MonsterSkill();
+        MonstersSkill();
     }
-    if(ArenaSkillCheck.IsAllMonsterDead(monsterInfo))
+    if(monsterSkills.IsAllMonsterDead(monsterInfo))
     {
-        ArenaSkillCheck.WinArena(monsterList, monsterId);
+        monsterSkills.WinArena(monsterList, monsterId);
         RestartArena();
         figthStarted = false;
         arenaStarted = false;
     }
-    else if(ArenaSkillCheck.IsAllTeamDead(teamInfo))
+    else if(teamSkills.IsAllTeamDead(teamInfo))
     {
-        ArenaSkillCheck.LoseArena(player);
+        teamSkills.LoseArena(player);
         RestartArena();
         figthStarted = false;
         arenaStarted = false;
     }
-    if(ArenaSkillCheck.IsMonsterDead(monsterInfo))
+    if(monsterSkills.IsMonsterDead(monsterInfo))
     {
         selectedMonsterIndex = 0;
     }
-    ArenaSkillCheck.IsTeammatesDead(teamInfo);
+    teamSkills.IsTeammateDead(teamInfo);
 
 }
 
@@ -175,11 +175,11 @@ void Arena::ArenaDraw()
     //Anims
     for(int i = 0; i < teamInfo.size(); i++)
     {
-        ArenaSkillCheck.CharacterAnim(teamInfo[i].first);
+        teamSkills.Animations(teamInfo[i].first);
     }
     for(int i = 0; i < monsterInfo.size(); i++)
     {
-        ArenaSkillCheck.MonsterAnim(numMonsAttack,monsterInfo[i].first,teamInfo);
+        monsterSkills.MonsterAnim(numMonsAttack,monsterInfo[i].first,teamInfo);
     }
 
     TeamDraw();
@@ -209,21 +209,22 @@ void Arena::TeamDraw()
     for(auto& character : teamInfo)
     {   
         //Icon
-        DrawTexturePro(character.first.icon,character.first.source,Rectangle{characterRec[i].x + 50,characterRec[i].y + 12,75,75},{0,0},0,WHITE);
+        DrawTexturePro(character.first.icon.image,character.first.icon.source,Rectangle{characterRec[i].x + 50,characterRec[i].y + 12,75,75},{0,0},0,WHITE);
         //Character In fight
-        DrawTexturePro(character.first.anims[character.first.animIndex].image,character.first.anims[character.first.animIndex].source,
+        DrawTexturePro(character.first.anim[character.first.animIndex].image,character.first.anim[character.first.animIndex].source,
         Rectangle{character.second.x - 16,character.second.y - 16,100,100},{0,0},0,WHITE);
         //HP
-        DrawRectangle(characterRec[i].x + 120,characterRec[i].y + 12,character.first.HPLeft, 15, RED);
-        DrawRectangleLines(characterRec[i].x + 120,characterRec[i].y + 12,character.first.HP, 15, WHITE);
+        int HPLeft = (character.first.basePower.HPLeft * 200) / character.first.basePower.HP;
+        DrawRectangle(characterRec[i].x + 120,characterRec[i].y + 12,HPLeft, 15, RED);
+        DrawRectangleLines(characterRec[i].x + 120,characterRec[i].y + 12,200, 15, WHITE);
         //Stamina
-        DrawRectangle(characterRec[i].x + 120,characterRec[i].y + 32,character.first.staminaLeft, 15, GREEN);
-        DrawRectangleLines(characterRec[i].x + 120,characterRec[i].y + 32,character.first.stamina, 15, WHITE); 
+        int StaminaLeft = (character.first.basePower.staminaLeft * 200) / character.first.basePower.stamina;
+        DrawRectangle(characterRec[i].x + 120,characterRec[i].y + 32,StaminaLeft, 15, GREEN);
+        DrawRectangleLines(characterRec[i].x + 120,characterRec[i].y + 32,200, 15, WHITE); 
         //Mana
-        DrawRectangle(characterRec[i].x + 120,characterRec[i].y + 50,character.first.manaLeft, 15, SKYBLUE);
-        DrawRectangleLines(characterRec[i].x + 120,characterRec[i].y + 50,character.first.mana, 15, WHITE);  
-        //Shield
-        DrawText(TextFormat("%i", character.first.shieldLeft), characterRec[i].x + 400, characterRec[i].y + 40, 30, GRAY);
+        int ManaLeft = (character.first.basePower.manaLeft * 200) / character.first.basePower.mana;
+        DrawRectangle(characterRec[i].x + 120,characterRec[i].y + 50,ManaLeft, 15, SKYBLUE);
+        DrawRectangleLines(characterRec[i].x + 120,characterRec[i].y + 50,200, 15, WHITE);  
         i++;
     }
     
@@ -235,16 +236,12 @@ void Arena::MonsterDraw()
     for(auto& monster : monsterInfo)
     {
         //Monster Img
-        DrawTexturePro(monster.first.anims[monster.first.animIndex].image,monster.first.anims[monster.first.animIndex].source,
+        DrawTexturePro(monster.first.anim[monster.first.animIndex].image,monster.first.anim[monster.first.animIndex].source,
         Rectangle{monster.second.x - 16,monster.second.y - 16,100,100},{0,0},0,WHITE);
         //Monster HP
-        int HPLeft = (monster.first.healthLeft * 100) / monster.first.health;
+        int HPLeft = (monster.first.basePower.HPLeft * 100) / monster.first.basePower.HP;
         DrawRectangle(monster.second.x - 25,monster.second.y + 100 - 25,100, 15, BLACK);
         DrawRectangle(monster.second.x - 25,monster.second.y + 100 - 25,HPLeft, 15, RED);
-        //Monster Shield
-        int ShieldLeft = (monster.first.shieldLeft * 100) / monster.first.shield;
-        DrawRectangle(monster.second.x - 25,monster.second.y + 110 - 25,100, 10, BLACK);
-        DrawRectangle(monster.second.x - 25,monster.second.y + 110 - 25,ShieldLeft, 10, LIGHTGRAY);
     }
 }
 
@@ -296,7 +293,7 @@ void Arena::EndRound()
     }
 }
 
-void Arena::MonsterSkill()
+void Arena::MonstersSkill()
 {
     if(numMonsAttack == 0)
     {
@@ -330,7 +327,7 @@ void Arena::MonsterSkill()
     {
         numMonsAttack = 0;
         round++;
-        ArenaSkillCheck.RestStaminaMana(teamInfo);
+        teamSkills.RestStaminaMana(teamInfo);
     }
 }
 void Arena::SelectSkill()
@@ -368,16 +365,30 @@ void Arena::SelectSkill()
 
 void Arena::CharacterSkill(int skillIndex)
 {
-    if(ArenaSkillCheck.CheckManaLeft(teamInfo[characterIndex].first.skills[skillIndex], teamInfo[characterIndex].first.manaLeft)
-    && ArenaSkillCheck.CheckStaminaLeft(teamInfo[characterIndex].first.skills[skillIndex], teamInfo[characterIndex].first.staminaLeft))
+    // if(ArenaSkillCheck.CheckManaLeft(teamInfo[characterIndex].first.skills[skillIndex], teamInfo[characterIndex].first.basePower.manaLeft)
+    // && ArenaSkillCheck.CheckStaminaLeft(teamInfo[characterIndex].first.skills[skillIndex], teamInfo[characterIndex].first.basePower.staminaLeft))
+    // {
+    //     if(teamInfo[characterIndex].first.skills[skillIndex].type == "Single Attack" || teamInfo[characterIndex].first.skills[skillIndex].type == "Multi Attack" )
+    //     {
+    //         ArenaSkillCheck.AttackSkill(teamInfo[characterIndex].first,skillIndex,monsterInfo[selectedMonsterIndex].first, monsterInfo);
+    //     }
+    //     if(teamInfo[characterIndex].first.skills[skillIndex].type == "Buff")
+    //     {
+    //         ArenaSkillCheck.BuffSkill(teamInfo, skillIndex, characterIndex);
+    //     }
+    //     usedAttack = true;
+    // }
+
+    if(teamSkills.CheckStaminaLeft(teamInfo[characterIndex].first.skills[skillIndex],teamInfo[characterIndex].first.basePower.staminaLeft)
+    && teamSkills.CheckManaLeft(teamInfo[characterIndex].first.skills[skillIndex],teamInfo[characterIndex].first.basePower.manaLeft))
     {
-        if(teamInfo[characterIndex].first.skills[skillIndex].type == "Single Attack" || teamInfo[characterIndex].first.skills[skillIndex].type == "Multi Attack" )
+        if(teamInfo[characterIndex].first.skills[skillIndex].type == "Physical" || teamInfo[characterIndex].first.skills[skillIndex].type == "Magical")
         {
-            ArenaSkillCheck.AttackSkill(teamInfo[characterIndex].first,skillIndex,monsterInfo[selectedMonsterIndex].first, monsterInfo);
+            teamSkills.AttackSkill(teamInfo[characterIndex].first,teamInfo[characterIndex].first.skills[skillIndex],monsterInfo[selectedMonsterIndex].first,monsterInfo);
         }
         if(teamInfo[characterIndex].first.skills[skillIndex].type == "Buff")
         {
-            ArenaSkillCheck.BuffSkill(teamInfo, skillIndex, characterIndex);
+            teamSkills.Buff(teamInfo[characterIndex].first,teamInfo[characterIndex].first.skills[skillIndex],teamInfo,monsterInfo[selectedMonsterIndex].first, monsterInfo);
         }
         usedAttack = true;
     }
